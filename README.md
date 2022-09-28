@@ -1,1 +1,1 @@
-# imdb_scrapping
+# capstone_imdb_scraping
