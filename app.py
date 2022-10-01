@@ -51,7 +51,7 @@ imdb['IMDB_Rating'] = imdb['IMDB_Rating'].astype('float64')
 imdb['Metascore'] = imdb['Metascore'].astype('int64')
 imdb['n_IMDB_Rating'] = imdb['IMDB_Rating']*10
 
-imdb_ratingXmeta = imdb[((imdb['Metascore']!=0) & (imdb['n_IMDB_Rating']!=0))].loc[:,['Film_Title','Metascore','n_IMDB_Rating']]
+imdb_ratingXmeta = imdb[((imdb['Metascore']!=0) & (imdb['n_IMDB_Rating']!=0))].loc[:,['Film_Title','Metascore','n_IMDB_Rating']].sort_values('n_IMDB_Rating',ascending=False)
 
 imdb_ratingXmetascore = imdb_ratingXmeta.set_index('Film_Title')
 
@@ -65,7 +65,7 @@ def index():
 
 
 	# generate plot
-	ax = imdb_ratingXmetascore.plot(figsize = (15,5)) 
+	ax = imdb_ratingXmetascore.head(7).plot(figsize = (15,5)) 
 	
 	# Rendering plot
 	# Do not change this
