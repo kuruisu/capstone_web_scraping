@@ -53,7 +53,7 @@ imdb['n_IMDB_Rating'] = imdb['IMDB_Rating']*10
 
 imdb_ratingXmeta = imdb[((imdb['Metascore']!=0) & (imdb['n_IMDB_Rating']!=0))].loc[:,['Film_Title','Metascore','n_IMDB_Rating']].sort_values('n_IMDB_Rating',ascending=False)
 
-imdb_ratingXmetascore = imdb_ratingXmeta.set_index('Film_Title')
+imdb_ratingXmetascore = imdb_ratingXmeta.sort_values('n_IMDB_Rating',ascending=False).set_index('Film_Title')
 
 
 #end of data wranggling 
