@@ -25,16 +25,28 @@ temp = [] #initiating a list
 
 for i in range(1, row_length):
 #insert the scrapping process here
+    #get the title
     title = table.find_all('h3',attrs= {'class': 'lister-item-header'})[i]
     title = title.find('a').text
     
+    #get the rating IMDB
     rating = table.find_all('div',attrs= {'class': 'inline-block ratings-imdb-rating'})[i]
     rating = rating.find('strong').text
     
-    metascore =table.find('span', attrs ={'class' : 'metascore'}).text.strip() if table.find('span', attrs ={'class' : 'metascore'}) else '0'
-
+    #get the metascore
+    imdb_metascore = table.find_all('div',attrs= {'class': 'ratings-bar'})
+    film_metascore = imdb_metascore[i].find('div',attrs= {'class': 'inline-block ratings-metascore'})
+    metascore = 0
+                                            
+    if film_metascore is not None:
+        
+        metascore =film_metascore.find('span', attrs ={'class' : 'metascore'}).text.strip()
+    
+    #get the votes
     value = table.find_all('p', attrs = {'class':'sort-num_votes-visible'})[i]
     votes = value.find('span', attrs = {'name': 'nv'}).text
+
+    temp.append((title,rating,metascore,votes))
 
     temp.append((title,rating,metascore,votes))
 
@@ -50,10 +62,11 @@ imdb['Votes'] = imdb['Votes'].astype('int64')
 imdb['IMDB_Rating'] = imdb['IMDB_Rating'].astype('float64')
 imdb['Metascore'] = imdb['Metascore'].astype('int64')
 imdb['n_IMDB_Rating'] = imdb['IMDB_Rating']*10
+imdb['n_IMDB_Rating'] = imdb['n_IMDB_Rating'].astype('int64')
 
 imdb_ratingXmeta = imdb[((imdb['Metascore']!=0) & (imdb['n_IMDB_Rating']!=0))].loc[:,['Film_Title','Metascore','n_IMDB_Rating']].sort_values('n_IMDB_Rating',ascending=False)
 
-imdb_ratingXmetascore = imdb_ratingXmeta.sort_values('n_IMDB_Rating',ascending=False).set_index('Film_Title')
+imdb_ratingXmetascore = imdb_ratingXmeta.sort_values('n_IMDB_Rating',ascending=False).set_index('Film_Title').head(7)
 
 
 #end of data wranggling 
@@ -63,9 +76,9 @@ def index():
 	
 	card_data = f'{imdb_ratingXmetascore[["n_IMDB_Rating","Metascore"]].mean().round(2)}' #be careful with the " and ' 
 
-
+	
 	# generate plot
-	ax = imdb_ratingXmetascore.head(7).plot(figsize = (15,5)) 
+	ax = imdb_ratingXmetascore.plot(figsize = (15,5)) 
 	
 	# Rendering plot
 	# Do not change this
